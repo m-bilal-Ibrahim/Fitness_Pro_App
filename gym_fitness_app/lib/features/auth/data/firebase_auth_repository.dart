@@ -21,8 +21,7 @@ class FirebaseAuthRepository implements AuthRepository {
       );
       return credential.user;
     } on FirebaseAuthException catch (e) {
-      // In a real app, you would throw a custom failure here
-      throw Exception(e.message);
+      throw Exception(e.message ?? 'An unknown error occurred during sign in.');
     }
   }
 
@@ -35,12 +34,22 @@ class FirebaseAuthRepository implements AuthRepository {
       );
       return credential.user;
     } on FirebaseAuthException catch (e) {
-      throw Exception(e.message);
+      throw Exception(e.message ?? 'Registration failed.');
     }
   }
 
   @override
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
+  }
+
+  @override
+  Future<void> sendEmailVerification() async {
+    await _firebaseAuth.currentUser?.sendEmailVerification();
   }
 }

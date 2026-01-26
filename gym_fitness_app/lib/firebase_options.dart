@@ -46,6 +46,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '737687305566',
     projectId: 'lab11-4b757',
     authDomain: 'lab11-4b757.firebaseapp.com',
+    databaseURL: 'https://lab11-4b757-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'lab11-4b757.firebasestorage.app',
     measurementId: 'G-8FV8SK8KDT',
   );
@@ -55,6 +56,7 @@ class DefaultFirebaseOptions {
     appId: '1:737687305566:android:f51dd16411bf6b3d2063cf',
     messagingSenderId: '737687305566',
     projectId: 'lab11-4b757',
+    databaseURL: 'https://lab11-4b757-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'lab11-4b757.firebasestorage.app',
   );
 
@@ -63,6 +65,7 @@ class DefaultFirebaseOptions {
     appId: '1:737687305566:ios:f2cb582f265fbe682063cf',
     messagingSenderId: '737687305566',
     projectId: 'lab11-4b757',
+    databaseURL: 'https://lab11-4b757-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'lab11-4b757.firebasestorage.app',
     iosBundleId: 'com.example.gymFitnessApp',
   );
@@ -72,6 +75,7 @@ class DefaultFirebaseOptions {
     appId: '1:737687305566:ios:f2cb582f265fbe682063cf',
     messagingSenderId: '737687305566',
     projectId: 'lab11-4b757',
+    databaseURL: 'https://lab11-4b757-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'lab11-4b757.firebasestorage.app',
     iosBundleId: 'com.example.gymFitnessApp',
   );
@@ -82,7 +86,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '737687305566',
     projectId: 'lab11-4b757',
     authDomain: 'lab11-4b757.firebaseapp.com',
+    databaseURL: 'https://lab11-4b757-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'lab11-4b757.firebasestorage.app',
     measurementId: 'G-HLMYJYL8HR',
   );
+
 }
