@@ -67,7 +67,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     int currentDayIndex = now.weekday - 1;
     for (int i = 0; i < currentDayIndex; i++) {
-      // Simulating past days with enough variance to test streaks
       _weekData[i] = 3000 + random.nextInt(6000);
     }
     if (currentDayIndex >= 0 && currentDayIndex < 7) {
@@ -82,22 +81,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _monthData[currentWeekIndex] = currentWeekSum;
   }
 
-  // --- Logic to calculate streak based on history and goal ---
   int _calculateCurrentStreak() {
     int streak = 0;
     int todayIndex = DateTime.now().weekday - 1;
-
-    // Check backwards from today to Monday
     for (int i = todayIndex; i >= 0; i--) {
-      // For today (i == todayIndex), we use the real-time _todaySteps
-      // For past days, we use the simulated _weekData
       int steps = (i == todayIndex) ? _todaySteps : _weekData[i];
-
-      if (steps >= _dailyGoal) {
-        streak++;
-      } else {
-        break; // Streak broken
-      }
+      if (steps >= _dailyGoal) streak++;
+      else break;
     }
     return streak;
   }
@@ -118,29 +108,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Text("$tempGoal Steps", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: neonGreen)),
                   const SizedBox(height: 10),
                   Slider(
-                    value: tempGoal.toDouble(),
-                    min: 1000,
-                    max: 20000,
-                    divisions: 19,
-                    activeColor: neonGreen,
-                    inactiveColor: Colors.white10,
-                    onChanged: (val) {
-                      setDialogState(() => tempGoal = val.toInt());
-                    },
+                    value: tempGoal.toDouble(), min: 1000, max: 20000, divisions: 19,
+                    activeColor: neonGreen, inactiveColor: Colors.white10,
+                    onChanged: (val) => setDialogState(() => tempGoal = val.toInt()),
                   ),
                 ],
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: const Text("Cancel", style: TextStyle(color: Colors.white54)),
-                ),
+                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Cancel", style: TextStyle(color: Colors.white54))),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: neonGreen),
                   onPressed: () {
                     setState(() {
                       _dailyGoal = tempGoal;
-                      // Update the current week data to reflect dynamic goal changes visually immediately
                       int todayIndex = DateTime.now().weekday - 1;
                       if(todayIndex >= 0) _weekData[todayIndex] = _todaySteps;
                     });
@@ -158,14 +138,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   double _convertStepsToMetric(int steps, String metric) {
     switch (metric) {
-      case "Kcal":
-        return steps * 0.045;
-      case "Distance":
-        return steps * 0.0008;
-      case "Heart":
-        return steps > 0 ? (70 + (steps / 50)).clamp(70, 160) : 72;
-      default:
-        return steps.toDouble();
+      case "Kcal": return steps * 0.045;
+      case "Distance": return steps * 0.0008;
+      case "Heart": return steps > 0 ? (70 + (steps / 50)).clamp(70, 160) : 72;
+      default: return steps.toDouble();
     }
   }
 
@@ -182,8 +158,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (await Permission.activityRecognition.request().isGranted) {
       try {
         _stepSubscription = Pedometer.stepCountStream.listen(
-          _onStepCount,
-          onError: (error) => setState(() => _isPedometerAvailable = false),
+          _onStepCount, onError: (error) => setState(() => _isPedometerAvailable = false),
         );
       } catch (e) {
         setState(() => _isPedometerAvailable = false);
@@ -209,9 +184,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       final now = DateTime.now();
       _dayData[now.hour] += delta;
       int dayIndex = now.weekday - 1;
-      if (dayIndex >= 0 && dayIndex < 7) {
-        _weekData[dayIndex] = _todaySteps; // Ensure week data is in sync
-      }
+      if (dayIndex >= 0 && dayIndex < 7) _weekData[dayIndex] = _todaySteps;
       int weekIndex = (now.day / 7).floor().clamp(0, 3);
       _monthData[weekIndex] += delta;
     });
@@ -227,13 +200,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     double total = data.isEmpty ? 0.0 : data.reduce((a, b) => a + b);
 
     List<String> labels = [];
-    if (_selectedPeriod == 'Day') {
-      labels = List.generate(24, (i) => i % 6 == 0 ? "${i}h" : "");
-    } else if (_selectedPeriod == 'Week') {
-      labels = ["M", "T", "W", "T", "F", "S", "S"];
-    } else {
-      labels = ["W1", "W2", "W3", "W4"];
-    }
+    if (_selectedPeriod == 'Day') labels = List.generate(24, (i) => i % 6 == 0 ? "${i}h" : "");
+    else if (_selectedPeriod == 'Week') labels = ["M", "T", "W", "T", "F", "S", "S"];
+    else labels = ["W1", "W2", "W3", "W4"];
 
     return {'data': data, 'total': total, 'labels': labels};
   }
@@ -260,36 +229,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         : graphState['total'];
 
     final unit = _getUnit(_selectedMetric);
-    final currentStreak = _calculateCurrentStreak(); // Calculate streak dynamically
+    final currentStreak = _calculateCurrentStreak();
 
     return Scaffold(
-      backgroundColor: Colors.black, // Dark Theme
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. HEADER
+              // 1. HEADER (Compact)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Dashboard", style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
-                      const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Text("Activity Tracker", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+                          const Text("Activity Tracker", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                           if (!_isPedometerAvailable)
                             GestureDetector(
                               onTap: () => _addSteps(50),
                               child: Container(
-                                margin: const EdgeInsets.only(left: 10),
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(color: Colors.red.shade900, borderRadius: BorderRadius.circular(8)),
-                                child: const Row(children: [Icon(Icons.add, size: 14, color: Colors.white), Text(" TEST", style: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold))]),
+                                margin: const EdgeInsets.only(left: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(color: Colors.red.shade900, borderRadius: BorderRadius.circular(6)),
+                                child: const Row(children: [Icon(Icons.add, size: 12, color: Colors.white), Text(" TEST", style: TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold))]),
                               ),
                             ),
                         ],
@@ -298,18 +265,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
 
-              // 2. GRAPH CARD
+              // 2. GRAPH CARD (Height Reduced)
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade900, // Dark Card
-                  borderRadius: BorderRadius.circular(28),
+                  color: Colors.grey.shade900,
+                  borderRadius: BorderRadius.circular(24),
                 ),
                 child: Column(
                   children: [
-                    // --- PREVENT OVERFLOW ON GRAPH HEADER ---
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,11 +291,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     _selectedMetric == "Steps" || _selectedMetric == "Heart"
                                         ? displayValue.toInt().toString()
                                         : displayValue.toStringAsFixed(2),
-                                    style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: neonGreen)
+                                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: neonGreen)
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Text("$_selectedMetric ($unit)", style: const TextStyle(color: Colors.white54, fontSize: 13, fontWeight: FontWeight.w600)),
+                              const SizedBox(height: 2),
+                              Text("$_selectedMetric ($unit)", style: const TextStyle(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.w600)),
                             ],
                           ),
                         ),
@@ -338,9 +304,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
+                    // --- GRAPH BARS ---
                     SizedBox(
-                      height: 180,
+                      height: 120,
                       child: Stack(
                         children: [
                           Column(
@@ -371,18 +338,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     children: [
                                       AnimatedContainer(
                                         duration: const Duration(milliseconds: 200),
-                                        width: _selectedPeriod == 'Day' ? 8 : 22,
-                                        height: isFuture ? 5 : (140 * h),
+                                        width: _selectedPeriod == 'Day' ? 6 : 18,
+                                        height: isFuture ? 5 : (80 * h),
                                         decoration: BoxDecoration(
                                           color: isFuture
                                               ? Colors.white10
                                               : (isSelected ? neonGreen : Colors.white24),
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
                                       ),
-                                      const SizedBox(height: 12),
+                                      const SizedBox(height: 8),
                                       if (labels.length > i)
-                                        Text(labels[i], style: TextStyle(fontSize: 11, color: isSelected ? neonGreen : Colors.white38, fontWeight: FontWeight.bold)),
+                                        Text(labels[i], style: TextStyle(fontSize: 10, color: isSelected ? neonGreen : Colors.white38, fontWeight: FontWeight.bold)),
                                     ],
                                   ),
                                 ),
@@ -396,29 +363,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
               const Text("Activity Summary", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
 
+              // 3. COMPACT BADGES
               Row(
                 children: [
                   Expanded(child: _buildInteractiveStatCard("Steps", _todaySteps.toString(), "steps", Icons.directions_walk, Colors.green)),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 7),
                   Expanded(child: _buildInteractiveStatCard("Kcal", _convertStepsToMetric(_todaySteps, "Kcal").toInt().toString(), "kcal", Icons.local_fire_department, Colors.orange)),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 7),
               Row(
                 children: [
                   Expanded(child: _buildInteractiveStatCard("Heart", _convertStepsToMetric(_todaySteps, "Heart").toInt().toString(), "bpm", Icons.favorite, Colors.red)),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 7),
                   Expanded(child: _buildInteractiveStatCard("Distance", _convertStepsToMetric(_todaySteps, "Distance").toStringAsFixed(2), "km", Icons.map, Colors.indigo)),
                 ],
               ),
 
               const SizedBox(height: 24),
-              _buildStreakCard(currentStreak), // Pass calculated streak
-              const SizedBox(height: 30),
+
+              // --- STREAK & PLANS BELOW ---
+              _buildStreakCard(currentStreak),
+              const SizedBox(height: 20),
 
               myGymsAsync.when(
                 data: (gyms) {
@@ -428,7 +398,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       children: [
                         const Text("My Gyms", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                         const SizedBox(height: 12),
-                        SizedBox(height: 140, child: ListView(scrollDirection: Axis.horizontal, children: gyms.map((g) => _buildOwnerCard(g)).toList())),
+                        SizedBox(height: 120, child: ListView(scrollDirection: Axis.horizontal, children: gyms.map((g) => _buildOwnerCard(g)).toList())),
                       ],
                     );
                   }
@@ -436,7 +406,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text("Your Active Membership", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       activeBookingAsync.when(
                         data: (booking) => booking == null ? _buildEmptyPlanCard() : _buildActivePlanCard(context, booking),
                         loading: () => const Center(child: CircularProgressIndicator(color: neonGreen)),
@@ -449,7 +419,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 error: (e, _) => const SizedBox(),
               ),
 
-              const SizedBox(height: 80),
+              const SizedBox(height: 60),
             ],
           ),
         ),
@@ -460,18 +430,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildToggle() {
     return Container(
       padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: Colors.grey.shade800, borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.grey.shade700)),
+      decoration: BoxDecoration(color: Colors.grey.shade800, borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.grey.shade700)),
       child: Row(
         children: ["Day", "Week", "Month"].map((p) => GestureDetector(
           onTap: () => setState(() { _selectedPeriod = p; _focusedIndex = null; }),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: _selectedPeriod == p ? neonGreen : Colors.transparent,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
             ),
-            child: Text(p, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _selectedPeriod == p ? Colors.black : Colors.grey)),
+            child: Text(p, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: _selectedPeriod == p ? Colors.black : Colors.grey)),
           ),
         )).toList(),
       ),
@@ -487,21 +457,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       }),
       child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
               color: isSelected ? neonGreen.withOpacity(0.1) : Colors.grey.shade900,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(color: isSelected ? neonGreen : Colors.transparent, width: 2),
               boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))]
           ),
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(radius: 16, backgroundColor: isSelected ? neonGreen.withOpacity(0.2) : color.withOpacity(0.1), child: Icon(i, color: isSelected ? neonGreen : color, size: 16)),
-                const SizedBox(height: 12),
-                Text(metric, style: TextStyle(color: Colors.grey.shade400, fontSize: 12, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 4),
-                RichText(text: TextSpan(text: v, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold), children: [TextSpan(text: " $u", style: const TextStyle(fontSize: 12, color: Colors.grey))]))
+                CircleAvatar(radius: 14, backgroundColor: isSelected ? neonGreen.withOpacity(0.2) : color.withOpacity(0.1), child: Icon(i, color: isSelected ? neonGreen : color, size: 14)),
+                const SizedBox(height: 8),
+                Text(metric, style: TextStyle(color: Colors.grey.shade400, fontSize: 11, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 2),
+                RichText(text: TextSpan(text: v, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold), children: [TextSpan(text: " $u", style: const TextStyle(fontSize: 10, color: Colors.grey))]))
               ]
           )
       ),
@@ -511,7 +481,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildStreakCard(int currentStreak) {
     final todayIndex = DateTime.now().weekday - 1;
     return GestureDetector(
-      onTap: _editDailyGoal, // Allow changing goal on tap
+      onTap: _editDailyGoal,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -527,56 +497,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(children: [
-                    Icon(Icons.local_fire_department, color: currentStreak > 0 ? Colors.orange : Colors.grey, size: 22),
-                    const SizedBox(width: 8),
-                    const Flexible(
-                      child: Text(
-                        "Daily Streak",
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                    Icon(Icons.local_fire_department, color: currentStreak > 0 ? Colors.orange : Colors.grey, size: 18),
                     const SizedBox(width: 5),
-                    const Icon(Icons.edit, size: 14, color: Colors.white38) // Hint to edit
+                    const Icon(Icons.edit, size: 12, color: Colors.white38)
                   ]),
                   const SizedBox(height: 4),
                   Text(
                     currentStreak > 0 ? "$currentStreak Day Streak!" : "Hit $_dailyGoal steps to ignite!",
-                    style: TextStyle(color: Colors.grey.shade500, fontSize: 11, fontWeight: FontWeight.w600),
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 9, fontWeight: FontWeight.w600),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
-            // Dots representing the last 7 days from _weekData
             Row(
               mainAxisSize: MainAxisSize.min,
               children: List.generate(7, (i) {
-                // Determine if this specific day (i) met the goal
-                // Map dot index 0..6 to the week days.
-                // Assuming _weekData is ordered Mon..Sun (0..6)
                 final isDayMet = _weekData[i] >= _dailyGoal;
-                // Highlight only days up to today
                 final isFuture = i > todayIndex;
                 Color dotColor;
-                if (isFuture) {
-                  dotColor = Colors.white10; // Future days
-                } else if (isDayMet) {
-                  dotColor = neonGreen; // Goal met
-                } else {
-                  dotColor = Colors.grey.shade800; // Goal missed
-                }
+                if (isFuture) dotColor = Colors.white10;
+                else if (isDayMet) dotColor = neonGreen;
+                else dotColor = Colors.grey.shade800;
 
                 return Padding(
                   padding: const EdgeInsets.only(left: 4),
                   child: Container(
-                    width: 24, height: 24,
+                    width: 18, height: 18,
                     decoration: BoxDecoration(
                       color: dotColor,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.check, size: 14, color: isDayMet && !isFuture ? Colors.black : Colors.transparent),
+                    child: Icon(Icons.check, size: 5, color: isDayMet && !isFuture ? Colors.black : Colors.transparent),
                   ),
                 );
               }),
@@ -587,6 +540,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  // --- UPDATED: Shorter Card Height (Reduced Padding & Spacing) ---
   Widget _buildActivePlanCard(BuildContext context, Map<String, dynamic> booking) {
     final daysLeft = DateTime.parse(booking['expiryDate']).difference(DateTime.now()).inDays;
     final planName = booking['plan'].toString();
@@ -599,27 +553,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ActivePlanScreen(booking: booking, bookingId: booking['id'] ?? '', themeColor: Colors.black))),
       child: Container(
-        width: double.infinity, padding: const EdgeInsets.all(24),
+        width: double.infinity,
+        padding: const EdgeInsets.all(16), // Reduced padding from 24
         decoration: BoxDecoration(
             color: cardColor,
-            borderRadius: BorderRadius.circular(24)
+            borderRadius: BorderRadius.circular(15)
         ),
         child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(booking['gymName'], style: const TextStyle(color: Colors.black87, fontSize: 18, fontWeight: FontWeight.w900)),
-            Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), decoration: BoxDecoration(color: Colors.white.withOpacity(0.4), borderRadius: BorderRadius.circular(12)), child: Text(planName.toUpperCase(), style: const TextStyle(color: Colors.black87, fontSize: 10, fontWeight: FontWeight.bold))),
+            Text(booking['gymName'], style: const TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.w900)),
+            Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), decoration: BoxDecoration(color: Colors.white.withOpacity(0.4), borderRadius: BorderRadius.circular(12)), child: Text(planName.toUpperCase(), style: const TextStyle(color: Colors.black87, fontSize: 8, fontWeight: FontWeight.bold))),
           ]),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12), // Reduced spacing from 24
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text("TIME SLOT", style: TextStyle(color: Colors.black54, fontSize: 10, fontWeight: FontWeight.bold)), const SizedBox(height: 4), Text(booking['slot'].toString().split(' ').first, style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w800, fontSize: 15))]),
-            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [const Text("TAP FOR DETAILS", style: TextStyle(color: Colors.black54, fontSize: 10, fontWeight: FontWeight.bold)), const SizedBox(height: 4), Row(children: [Text("$daysLeft Days Left", style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w800)), const SizedBox(width: 4), const Icon(Icons.arrow_forward_ios, color: Colors.black87, size: 12)])]),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text("TIME SLOT", style: TextStyle(color: Colors.black54, fontSize: 8, fontWeight: FontWeight.bold)), const SizedBox(height: 4), Text(booking['slot'].toString().split(' ').first, style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w800, fontSize: 10))]),
+            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [const Text("TAP FOR DETAILS", style: TextStyle(color: Colors.black54, fontSize: 8, fontWeight: FontWeight.bold)), const SizedBox(height: 4), Row(children: [Text("$daysLeft Days Left", style: const TextStyle(color: Colors.black87,fontSize: 12, fontWeight: FontWeight.w800)), const SizedBox(width: 4), const Icon(Icons.arrow_forward_ios, color: Colors.black87, size: 10)])]),
           ]),
         ]),
       ),
     );
   }
 
-  Widget _buildEmptyPlanCard() => Container(width: double.infinity, padding: const EdgeInsets.all(24), decoration: BoxDecoration(color: Colors.grey.shade900, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.grey.shade800)), child: Column(children: [Icon(Icons.card_membership, size: 40, color: Colors.grey.shade600), const SizedBox(height: 10), const Text("No active plan", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))]));
+  // Also reduced padding here for consistency
+  Widget _buildEmptyPlanCard() => Container(width: double.infinity, padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.grey.shade900, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.grey.shade800)), child: Column(children: [Icon(Icons.card_membership, size: 40, color: Colors.grey.shade600), const SizedBox(height: 10), const Text("No active plan", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))]));
 
   Widget _buildOwnerCard(GymModel g) => Container(width: 220, margin: const EdgeInsets.only(right: 12), padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.grey.shade900, borderRadius: BorderRadius.circular(20)), child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(g.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis), Text("${GymLogic.getTotalActiveMembers(g.id)} Active Members", style: const TextStyle(color: Colors.white54)), Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: neonGreen, borderRadius: BorderRadius.circular(8)), child: Text("RATING ${g.rating}", style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black)))]));
 }

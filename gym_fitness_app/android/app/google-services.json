@@ -13,7 +13,20 @@
           "package_name": "com.example.gym_fitness_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "737687305566-laecaktiajtfbptvddtmju3m8fokbkni.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gym_fitness_app",
+            "certificate_hash": "37a3bf305856f61d5fc3413c1384e99a1fe4db22"
+          }
+        },
+        {
+          "client_id": "737687305566-flagtaihka32s3qm3cgg2flj1bhgjkvm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDB77_k7JJhvD6aCHsWD8FQ0slrarYcZ3Y"
@@ -21,7 +34,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "737687305566-flagtaihka32s3qm3cgg2flj1bhgjkvm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "737687305566-ebqbji1u49jd47madfkeivbadt5pmeoc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.newwww"
+              }
+            }
+          ]
         }
       }
     },
@@ -32,7 +57,12 @@
           "package_name": "com.example.newwww"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "737687305566-flagtaihka32s3qm3cgg2flj1bhgjkvm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDB77_k7JJhvD6aCHsWD8FQ0slrarYcZ3Y"
@@ -40,7 +70,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "737687305566-flagtaihka32s3qm3cgg2flj1bhgjkvm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "737687305566-ebqbji1u49jd47madfkeivbadt5pmeoc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.newwww"
+              }
+            }
+          ]
         }
       }
     }

@@ -35,6 +35,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  // --- NEW: GOOGLE HANDLER ---
+  Future<void> _handleGoogleLogin() async {
+    setState(() => _isLoading = true);
+    try {
+      final isRegistered = await ref.read(authControllerProvider).signInWithGoogle();
+
+      if (!isRegistered) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Google account not registered. Please Sign Up first."),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 3),
+            ),
+          );
+          // Redirect to Sign Up
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SignUpScreen()),
+          );
+        }
+      }
+      // If isRegistered == true, AuthGate handles the navigation automatically.
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Google Sign In Failed: $e")));
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,6 +131,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 const SizedBox(height: 10),
 
+                // --- LOGIN BUTTON ---
                 ElevatedButton(
                   onPressed: _isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
@@ -125,6 +158,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
 
                 const SizedBox(height: 30),
+
+                // --- SIGN UP LINK ---
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -147,6 +182,45 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 20),
+
+                // --- OR DIVIDER ---
+                const Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.white24)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Text("OR", style: TextStyle(color: Colors.white54)),
+                    ),
+                    Expanded(child: Divider(color: Colors.white24)),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                // --- GOOGLE LOGIN BUTTON ---
+                OutlinedButton.icon(
+                  onPressed: _isLoading ? null : _handleGoogleLogin,
+                  // Using network image for icon (standard G logo)
+                  icon: Image.network(
+                    'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png',
+                    height: 24,
+                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.public, color: Colors.white),
+                  ),
+                  label: const Text(
+                    "Login with Google",
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    side: const BorderSide(color: Colors.white24),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -171,7 +245,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 }
 
 // ---------------------------------------------------------
-// NEW FORGOT PASSWORD SCREEN
+// FORGOT PASSWORD SCREEN
 // ---------------------------------------------------------
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});

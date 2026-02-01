@@ -96,7 +96,7 @@ class _TimeToolScreenState extends State<TimeToolScreen> with TickerProviderStat
       backgroundColor: darkBg,
       appBar: AppBar(
         title: const Text("TIME TRACKER",
-            style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.5, color: Colors.white)),
+            style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white,fontSize: 20)),
         centerTitle: true,
         backgroundColor: darkBg,
         elevation: 0,
@@ -127,9 +127,9 @@ class _TimeToolScreenState extends State<TimeToolScreen> with TickerProviderStat
 
             // 2. TABS
             Container(
-              height: 40,
-              width: 240,
-              margin: const EdgeInsets.symmetric(vertical: 8),
+              height: 35,
+              width: 200,
+              margin: const EdgeInsets.symmetric(vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.grey[900],
                 borderRadius: BorderRadius.circular(20),
@@ -172,15 +172,15 @@ class _TimeToolScreenState extends State<TimeToolScreen> with TickerProviderStat
       children: [
         FittedBox(
           child: Text(time,
-              style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.white, fontFeatures: [FontFeature.tabularFigures()])),
+              style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: Colors.white, fontFeatures: [FontFeature.tabularFigures()])),
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildCircleButton(icon: Icons.refresh, color: Colors.grey[800]!, iconColor: Colors.white, onTap: _resetStopwatch, size: 50),
-            const SizedBox(width: 30),
-            _buildCircleButton(icon: _stopwatch.isRunning ? Icons.pause : Icons.play_arrow, color: _stopwatch.isRunning ? Colors.redAccent : neonGreen, iconColor: Colors.black, onTap: _toggleStopwatch, size: 70),
+            _buildCircleButton(icon: Icons.refresh, color: Colors.grey[800]!, iconColor: Colors.white, onTap: _resetStopwatch, size: 36),
+            const SizedBox(width: 20),
+            _buildCircleButton(icon: _stopwatch.isRunning ? Icons.pause : Icons.play_arrow, color: _stopwatch.isRunning ? Colors.redAccent : neonGreen, iconColor: Colors.black, onTap: _toggleStopwatch, size: 55),
           ],
         ),
       ],
@@ -197,7 +197,7 @@ class _TimeToolScreenState extends State<TimeToolScreen> with TickerProviderStat
             child: CupertinoTheme(
               data: const CupertinoThemeData(
                 textTheme: CupertinoTextThemeData(
-                  pickerTextStyle: TextStyle(color: Colors.white, fontSize: 18),
+                  pickerTextStyle: TextStyle(color: Colors.white, fontSize: 15),
                 ),
               ),
               child: CupertinoTimerPicker(
@@ -210,12 +210,12 @@ class _TimeToolScreenState extends State<TimeToolScreen> with TickerProviderStat
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 7),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor: neonGreen,
                 foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))
             ),
             onPressed: _startTimer,
@@ -230,15 +230,15 @@ class _TimeToolScreenState extends State<TimeToolScreen> with TickerProviderStat
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           FittedBox(
-            child: Text(time, style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.white, fontFeatures: [FontFeature.tabularFigures()])),
+            child: Text(time, style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white, fontFeatures: [FontFeature.tabularFigures()])),
           ),
           const SizedBox(height: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildCircleButton(icon: Icons.stop, color: Colors.grey[800]!, iconColor: Colors.white, onTap: _stopTimer, size: 50),
-              const SizedBox(width: 30),
-              _buildCircleButton(icon: _isTimerRunning ? Icons.pause : Icons.play_arrow, color: _isTimerRunning ? Colors.orangeAccent : neonGreen, iconColor: Colors.black, onTap: _isTimerRunning ? _pauseTimer : _startTimer, size: 70),
+              _buildCircleButton(icon: Icons.stop, color: Colors.grey[800]!, iconColor: Colors.white, onTap: _stopTimer, size: 40),
+              const SizedBox(width: 20),
+              _buildCircleButton(icon: _isTimerRunning ? Icons.pause : Icons.play_arrow, color: _isTimerRunning ? Colors.orangeAccent : neonGreen, iconColor: Colors.black, onTap: _isTimerRunning ? _pauseTimer : _startTimer, size: 60),
             ],
           ),
         ],

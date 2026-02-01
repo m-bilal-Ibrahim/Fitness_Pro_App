@@ -21,7 +21,11 @@ class ProfileScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text("PROFILE", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.5, color: Colors.white)),
+        title: const Text(
+          "PROFILE",
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18), // Smaller AppBar Text
+        ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -29,11 +33,12 @@ class ProfileScreen extends ConsumerWidget {
         actions: [
           TextButton.icon(
             onPressed: () => _confirmLogout(context, ref),
-            icon: const Icon(Icons.logout, color: Colors.redAccent),
+            icon: const Icon(Icons.logout, color: Colors.redAccent, size: 10,),
             label: const Text(
               "Logout",
               style: TextStyle(
                 color: Colors.redAccent,
+                fontSize: 10,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -50,7 +55,7 @@ class ProfileScreen extends ConsumerWidget {
                 // 1. PROFILE HEADER
                 _buildProfileHeader(user),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
 
                 // 2. ACTION CARDS
                 _buildActionCard(
@@ -90,28 +95,28 @@ class ProfileScreen extends ConsumerWidget {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(4),
+          padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(color: neonGreen, width: 2),
           ),
           child: CircleAvatar(
-            radius: 60,
+            radius: 30,
             backgroundColor: Colors.grey.shade900,
             backgroundImage: (user.profilePic.isNotEmpty) ? NetworkImage(user.profilePic) : null,
             child: (user.profilePic.isEmpty)
-                ? const Icon(Icons.person, size: 60, color: Colors.white54)
+                ? const Icon(Icons.person, size: 30, color: Colors.white54)
                 : null,
           ),
         ),
         const SizedBox(height: 16),
         Text(
           user.fullName.isNotEmpty ? user.fullName.toUpperCase() : "FITNESS USER",
-          style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: 1),
+          style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 1),
         ),
         Text(
           user.email,
-          style: const TextStyle(color: Colors.grey, fontSize: 14),
+          style: const TextStyle(color: Colors.grey, fontSize: 10),
         ),
       ],
     );
@@ -121,11 +126,11 @@ class ProfileScreen extends ConsumerWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.only(bottom: 4.5),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Colors.grey.shade900,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.white10),
           boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4))],
         ),
@@ -133,21 +138,21 @@ class ProfileScreen extends ConsumerWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(12)),
-              child: Icon(icon, color: neonGreen, size: 24),
+              decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(8)),
+              child: Icon(icon, color: neonGreen, size: 14),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 8),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                  const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+                  Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: TextStyle(color: Colors.grey.shade500, fontSize: 8)),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, color: Colors.white24, size: 16),
+            const Icon(Icons.arrow_forward_ios, color: Colors.white24, size: 12),
           ],
         ),
       ),

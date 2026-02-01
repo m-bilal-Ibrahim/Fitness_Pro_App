@@ -23,24 +23,29 @@ class _ExploreGymsScreenState extends ConsumerState<ExploreGymsScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text("Find a Gym", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: Colors.white)),
+        title: const Text("Find a Gym", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
+          // 1. SLIMMER SEARCH BAR CONTAINER
+          preferredSize: const Size.fromHeight(25),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: TextField(
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                  hintText: "Search name or location...",
-                  hintStyle: const TextStyle(color: Colors.white38),
-                  prefixIcon: const Icon(Icons.search, color: Colors.white54),
-                  filled: true,
-                  fillColor: Colors.grey.shade900,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none)),
-              onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+            child: SizedBox(
+              height: 30, // Explicit Slim Height
+              child: TextField(
+                style: const TextStyle(color: Colors.white, fontSize: 12), // Smaller Input Text
+                decoration: InputDecoration(
+                    hintText: "Search name or location...",
+                    hintStyle: const TextStyle(color: Colors.white38, fontSize: 12), // Smaller Hint
+                    prefixIcon: const Icon(Icons.search, color: Colors.white54, size: 15), // Smaller Icon
+                    filled: true,
+                    fillColor: Colors.grey.shade900,
+                    isDense: true, // Removes default internal padding
+                    contentPadding: EdgeInsets.zero, // Centers text vertically
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none)),
+                onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
+              ),
             ),
           ),
         ),
@@ -55,7 +60,6 @@ class _ExploreGymsScreenState extends ConsumerState<ExploreGymsScreen> {
             padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              // Standard vertical card ratio to prevent height stretching
               childAspectRatio: 0.82,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
@@ -91,7 +95,7 @@ class _ProfessionalGymCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: Colors.grey.shade900,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14), // Slightly tighter radius
         boxShadow: [
           BoxShadow(
               color: Colors.black.withOpacity(0.08),
@@ -103,7 +107,7 @@ class _ProfessionalGymCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. IMAGE (Fixed at 45%)
+          // IMAGE SECTION
           Expanded(
             flex: 45,
             child: Stack(
@@ -119,24 +123,24 @@ class _ProfessionalGymCard extends StatelessWidget {
                         end: Alignment.bottomRight,
                       )
                   ),
-                  child: const Center(child: Icon(Icons.fitness_center, color: Colors.white24, size: 40)),
+                  child: const Center(child: Icon(Icons.fitness_center, color: Colors.white24, size: 30)),
                 ),
                 Positioned(
                   top: 6, right: 6,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.star, size: 10, color: neonGreen),
+                        const Icon(Icons.star, size: 9, color: neonGreen), // Tiny Star
                         const SizedBox(width: 2),
                         Text(
                             gym.rating.toString(),
-                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white)
+                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.white)
                         ),
                       ],
                     ),
@@ -146,7 +150,7 @@ class _ProfessionalGymCard extends StatelessWidget {
             ),
           ),
 
-          // 2. CONTENT (Fixed at 55%)
+          // CONTENT SECTION
           Expanded(
             flex: 55,
             child: Padding(
@@ -154,11 +158,12 @@ class _ProfessionalGymCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // 2. TITLE (Small: 14)
                   Text(
                       gym.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 16, // Shrunken
+                        fontSize: 12,
                         color: Colors.white,
                         height: 1.1,
                       ),
@@ -166,16 +171,18 @@ class _ProfessionalGymCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis
                   ),
                   const SizedBox(height: 2),
+
+                  // 3. LOCATION (Smallest: 9)
                   Row(
                     children: [
-                      Icon(Icons.location_on, size: 12, color: Colors.white38),
+                      const Icon(Icons.location_on, size: 7, color: Colors.white38),
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(
                             gym.address,
                             style: const TextStyle(
                                 color: Colors.white38,
-                                fontSize: 11, // Shrunken
+                                fontSize: 7,
                                 fontWeight: FontWeight.w600
                             ),
                             maxLines: 1,
@@ -185,39 +192,44 @@ class _ProfessionalGymCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  // Flexible space for description, truncated at 2 lines
+
+                  // 4. DESCRIPTION (Medium: 11 - Distinct size)
                   Expanded(
                     child: Text(
                       gym.description,
                       style: const TextStyle(
                         color: Colors.white30,
-                        fontSize: 10,
+                        fontSize: 9,
                         height: 1.1,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+
                   const Divider(height: 8, thickness: 0.5, color: Colors.white10),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      // 5. PRICE (Small: 13)
                       Text(
                           "\$${gym.priceSilver.toInt()}",
                           style: const TextStyle(
                               color: neonGreen,
                               fontWeight: FontWeight.w900,
-                              fontSize: 14 // Shrunken
+                              fontSize: 9
                           )
                       ),
+                      // 6. MEMBERS (Smallest: 10)
                       Row(
                         children: [
-                          const Icon(Icons.people, size: 12, color: Colors.white38),
+                          const Icon(Icons.people, size: 8, color: Colors.white38),
                           const SizedBox(width: 2),
                           Text(
                               "$totalMembers",
                               style: const TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 9,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white38
                               )
