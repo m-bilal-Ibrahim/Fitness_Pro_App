@@ -78,12 +78,40 @@ class _ActivePlanScreenState extends ConsumerState<ActivePlanScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        backgroundColor: Colors.grey.shade900, // Dark background
-        title: const Text("Unsubscribe?", style: TextStyle(color: Colors.white)),
-        content: const Text("You will lose access immediately. This cannot be undone.", style: TextStyle(color: Colors.white70)),
+        backgroundColor: Colors.grey.shade900,
+        // Same sizing constraints as the previous dialog
+        insetPadding: const EdgeInsets.symmetric(horizontal: 60),
+        contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+        titlePadding: const EdgeInsets.only(top: 20),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+
+        title: const Center(
+            child: Text("Unsubscribe?", style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold))
+        ),
+        content: const SizedBox(
+          width: 300,
+          child: Text(
+            "You will lose access immediately. This cannot be undone.",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white70, fontSize: 11),
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actionsPadding: const EdgeInsets.only(bottom: 16, top: 9),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text("Cancel")),
-          TextButton(onPressed: () => Navigator.pop(c, true), child: const Text("Unsubscribe", style: TextStyle(color: Colors.red))),
+          TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text("Cancel", style: TextStyle(color: Colors.white54, fontSize: 10))
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.shade800, // Destructive color
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                minimumSize: const Size(0, 30)
+            ),
+            onPressed: () => Navigator.pop(c, true),
+            child: const Text("Unsubscribe", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+          ),
         ],
       ),
     );
@@ -104,37 +132,37 @@ class _ActivePlanScreenState extends ConsumerState<ActivePlanScreen> {
     return Scaffold(
       backgroundColor: Colors.black, // Force Black background
       appBar: AppBar(
-        title: const Text("Membership Details", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text("Membership Details", style: TextStyle(color: Colors.white,fontSize: 18, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.black,
         elevation: 0,
-        iconTheme: const IconThemeData(color: neonGreen), // Neon Green Icon
+        iconTheme: const IconThemeData(color: neonGreen,size: 18),// Neon Green Icon
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             // MAIN INFO CARD
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.grey.shade900, // Dark Grey Card
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(18),
                 border: Border.all(color: Colors.white10),
               ),
               child: Column(
                 children: [
-                  Text(widget.booking['gymName'], textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
-                  const SizedBox(height: 12),
+                  Text(widget.booking['gymName'], textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900)),
+                  const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    decoration: BoxDecoration(color: neonGreen, borderRadius: BorderRadius.circular(20)),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    decoration: BoxDecoration(color: neonGreen, borderRadius: BorderRadius.circular(18)),
                     // Changed FontWeight.black to w900 to avoid errors
-                    child: Text(widget.booking['plan'].toString().toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 12, letterSpacing: 1)),
+                    child: Text(widget.booking['plan'].toString().toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 9, letterSpacing: 1)),
                   ),
-                  const SizedBox(height: 30),
-                  const Text("EXPIRES IN", style: TextStyle(color: neonGreen, fontSize: 12, letterSpacing: 2, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 18),
+                  const Text("EXPIRES IN", style: TextStyle(color: neonGreen, fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 7),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -149,20 +177,20 @@ class _ActivePlanScreenState extends ConsumerState<ActivePlanScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
 
             // RATING SECTION
-            const Text("Rate Your Experience", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
+            const Text("Rate Your Experience", style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 7),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: Colors.grey.shade900, // Dark Grey Card
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
                 children: [
-                  Text(_userRating.toStringAsFixed(1), style: const TextStyle(color: neonGreen, fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(_userRating.toStringAsFixed(1), style: const TextStyle(color: neonGreen, fontSize: 16, fontWeight: FontWeight.bold)),
                   Slider(
                     value: _userRating,
                     min: 1.0, max: 5.0, divisions: 40,
@@ -174,22 +202,23 @@ class _ActivePlanScreenState extends ConsumerState<ActivePlanScreen> {
                   ElevatedButton(
                     onPressed: _isRatingLoading ? null : _submitRating,
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: neonGreen, // Neon Green Button
+                        backgroundColor: neonGreen,
+                        iconSize: 10,// Neon Green Button
                         foregroundColor: Colors.black, // Black Text
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12)
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8)
                     ),
-                    child: _isRatingLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black)) : const Text("Submit Rating", style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: _isRatingLoading ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(color: Colors.black)) : const Text("Submit Rating", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                   )
                 ],
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
 
             // UNSUBSCRIBE BUTTON
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 30,
               child: OutlinedButton(
                 onPressed: _unsubscribe,
                 style: OutlinedButton.styleFrom(
@@ -197,7 +226,7 @@ class _ActivePlanScreenState extends ConsumerState<ActivePlanScreen> {
                     foregroundColor: Colors.red,
                     backgroundColor: Colors.transparent
                 ),
-                child: const Text("Unsubscribe & Cancel Plan"),
+                child: const Text("Unsubscribe & Cancel Plan", style: TextStyle(fontSize: 13)),
               ),
             ),
           ],
@@ -208,10 +237,10 @@ class _ActivePlanScreenState extends ConsumerState<ActivePlanScreen> {
 
   Widget _timeUnit(int value, String label) {
     return Column(children: [
-      Text(value.toString().padLeft(2, '0'), style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, fontFamily: 'monospace')), // White Text
-      Text(label, style: const TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)), // Grey Text
+      Text(value.toString().padLeft(2, '0'), style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, fontFamily: 'monospace')), // White Text
+      Text(label, style: const TextStyle(color: Colors.white38, fontSize: 7, fontWeight: FontWeight.bold)), // Grey Text
     ]);
   }
 
-  Widget _colon() => const Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: Text(":", style: TextStyle(color: neonGreen, fontSize: 32))); // Neon Green Colon
+  Widget _colon() => const Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: Text(":", style: TextStyle(color: neonGreen, fontSize: 22))); // Neon Green Colon
 }

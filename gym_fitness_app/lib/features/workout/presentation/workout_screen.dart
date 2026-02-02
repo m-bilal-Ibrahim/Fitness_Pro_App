@@ -99,8 +99,8 @@ class WorkoutScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.grey[800],
                             borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(20),
-                              bottomRight: Radius.circular(20),
+                              topRight: Radius.circular(15),
+                              bottomRight: Radius.circular(15),
                             ),
                             image: DecorationImage(
                               image: NetworkImage(category['image']!),

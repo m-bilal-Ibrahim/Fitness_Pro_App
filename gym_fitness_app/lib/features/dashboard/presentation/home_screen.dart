@@ -101,23 +101,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           builder: (context, setDialogState) {
             return AlertDialog(
               backgroundColor: Colors.grey.shade900,
-              title: const Text("Set Daily Goal", style: TextStyle(color: Colors.white)),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text("$tempGoal Steps", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: neonGreen)),
-                  const SizedBox(height: 10),
-                  Slider(
-                    value: tempGoal.toDouble(), min: 1000, max: 20000, divisions: 19,
-                    activeColor: neonGreen, inactiveColor: Colors.white10,
-                    onChanged: (val) => setDialogState(() => tempGoal = val.toInt()),
-                  ),
-                ],
+              // MODIFIED: Inset padding makes the dialog narrower (further from screen edges)
+              insetPadding: const EdgeInsets.symmetric(horizontal: 60),
+              // MODIFIED: Content padding reduces internal whitespace
+              contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+              titlePadding: const EdgeInsets.only(top: 20),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+
+              title: const Center(
+                  child: Text("Set Daily Goal", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))
               ),
+              content: SizedBox(
+                width: 300, // Constrains width inside the inset padding
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 10),
+                    Text("$tempGoal Steps", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: neonGreen)),
+                    const SizedBox(height: 0),
+                    Slider(
+                      value: tempGoal.toDouble(), min: 1000, max: 20000, divisions: 19,
+                      activeColor: neonGreen, inactiveColor: Colors.white10,
+                      onChanged: (val) => setDialogState(() => tempGoal = val.toInt()),
+                    ),
+                  ],
+                ),
+              ),
+              actionsAlignment: MainAxisAlignment.center,
+              actionsPadding: const EdgeInsets.only(bottom: 16, top: 0),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Cancel", style: TextStyle(color: Colors.white54))),
+                TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: const Text("Cancel", style: TextStyle(color: Colors.white54, fontSize: 10))
+                ),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: neonGreen),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: neonGreen,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      minimumSize: const Size(0, 30) // Makes button slightly more compact
+                  ),
                   onPressed: () {
                     setState(() {
                       _dailyGoal = tempGoal;
@@ -126,7 +148,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     });
                     Navigator.pop(ctx);
                   },
-                  child: const Text("Save Goal", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  child: const Text("Save", style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold)),
                 )
               ],
             );

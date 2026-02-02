@@ -199,7 +199,7 @@ class _ProfessionalGymCard extends StatelessWidget {
                       gym.description,
                       style: const TextStyle(
                         color: Colors.white30,
-                        fontSize: 9,
+                        fontSize: 7.5,
                         height: 1.1,
                       ),
                       maxLines: 2,

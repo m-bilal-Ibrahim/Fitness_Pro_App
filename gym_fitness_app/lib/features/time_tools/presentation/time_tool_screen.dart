@@ -213,6 +213,7 @@ class _TimeToolScreenState extends State<TimeToolScreen> with TickerProviderStat
           const SizedBox(height: 7),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
+                iconSize: 10,
                 backgroundColor: neonGreen,
                 foregroundColor: Colors.black,
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),

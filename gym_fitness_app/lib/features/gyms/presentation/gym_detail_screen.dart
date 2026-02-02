@@ -43,12 +43,12 @@ class _GymDetailScreenState extends ConsumerState<GymDetailScreen> {
         context: context,
         builder: (ctx) => AlertDialog(
           backgroundColor: Colors.grey.shade900,
-          title: const Text("Active Plan Found", style: TextStyle(color: Colors.white)),
-          content: Text("You are currently subscribed to ${activeBooking['gymName']}.\n\nYou cannot have two active plans. Do you want to CANCEL your current plan and subscribe to this new one?", style: const TextStyle(color: Colors.white70)),
+          title: const Text("Active Plan Found", style: TextStyle(color: Colors.white, fontSize: 13)),
+          content: Text("You are currently subscribed to ${activeBooking['gymName']}.\n\nYou cannot have two active plans. Do you want to CANCEL your current plan and subscribe to this new one?", style: const TextStyle(color: Colors.white70, fontSize: 10)),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("No, Keep Current")),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("No, Keep Current",style: TextStyle(fontSize: 12),)),
             TextButton(
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(foregroundColor: Colors.red, iconSize: 10),
               onPressed: () async {
                 Navigator.pop(ctx);
                 try {
@@ -62,7 +62,7 @@ class _GymDetailScreenState extends ConsumerState<GymDetailScreen> {
                   if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
                 }
               },
-              child: const Text("Yes, Replace Plan"),
+              child: const Text("Yes, Replace Plan", style: TextStyle(fontSize: 12),),
             ),
           ],
         ),
