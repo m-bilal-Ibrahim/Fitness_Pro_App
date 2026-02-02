@@ -77,21 +77,21 @@ class _GymDetailScreenState extends ConsumerState<GymDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Colors.grey.shade900,
-        title: const Text("Secure Payment", style: TextStyle(color: Colors.white)),
+        title: const Text("Secure Payment", style: TextStyle(color: Colors.white,fontSize: 14)),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text("Total: \$${_totalPrice.toStringAsFixed(0)}", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: neonGreen)),
-          const SizedBox(height: 20),
+          Text("Total: \$${_totalPrice.toStringAsFixed(0)}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: neonGreen)),
+          const SizedBox(height: 14),
           TextField(
             controller: _bankController,
             style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(labelText: "Card Number (16 Digits)", labelStyle: TextStyle(color: Colors.white54), border: OutlineInputBorder(), prefixIcon: Icon(Icons.credit_card, color: Colors.white54), counterText: "", enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white24))),
+            decoration: const InputDecoration(labelText: "Card Number (16 Digits)", labelStyle: TextStyle(color: Colors.white54,fontSize: 12), border: OutlineInputBorder(), prefixIcon: Icon(Icons.credit_card,size: 12, color: Colors.white54), counterText: "", enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white24))),
             keyboardType: TextInputType.number,
             maxLength: 16,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           ),
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Cancel")),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Cancel", style: TextStyle(fontSize: 12),)),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: neonGreen),
             onPressed: () async {
@@ -115,7 +115,7 @@ class _GymDetailScreenState extends ConsumerState<GymDetailScreen> {
                 if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
               }
             },
-            child: const Text("PAY & JOIN", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+            child: const Text("PAY & JOIN", style: TextStyle(color: Colors.black,fontSize: 10, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -132,30 +132,30 @@ class _GymDetailScreenState extends ConsumerState<GymDetailScreen> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 250, pinned: true,
+            expandedHeight: 200, pinned: true,
             backgroundColor: Colors.black,
             iconTheme: const IconThemeData(color: neonGreen),
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(gym.name, style: const TextStyle(color: Colors.white, shadows: [Shadow(color: Colors.black, blurRadius: 10)])),
+              title: Text(gym.name, style: const TextStyle(color: Colors.white,fontSize: 16, shadows: [Shadow(color: Colors.black, blurRadius: 10)])),
               background: Image.network(gym.images.first, fit: BoxFit.cover),
             ),
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(15),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: [const Icon(Icons.location_on, color: Colors.white54), const SizedBox(width: 5), Text(gym.address, style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.white))]),
-                const SizedBox(height: 12),
-                Text(gym.description, style: const TextStyle(color: Colors.white54, height: 1.4)),
-                const Divider(height: 40, color: Colors.white10),
-                const Text("1. Select Plan", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-                const SizedBox(height: 10),
+                Row(children: [const Icon(Icons.location_on,size: 12, color: Colors.white54), const SizedBox(width: 5), Text(gym.address, style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 12, color: Colors.white))]),
+                const SizedBox(height: 8),
+                Text(gym.description, style: const TextStyle(color: Colors.white54,fontSize: 12, height: 1.4)),
+                const Divider(height: 20, color: Colors.white10),
+                const Text("1. Select Plan", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+                const SizedBox(height: 6),
                 _planCard("Silver", "Weekly Access", gym.priceSilver),
                 _planCard("Gold", "Monthly Access", gym.priceGold),
                 _planCard("Platinum", "Yearly Access", gym.pricePlatinum),
-                const SizedBox(height: 30),
-                const Text("2. Select Time Slot", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                 const SizedBox(height: 10),
+                const Text("2. Select Time Slot", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+                const SizedBox(height: 6),
                 bookingsAsync.when(
                   data: (bookings) {
                     final slotCounts = GymLogic.getSlotCounts(gym.id);
@@ -164,7 +164,7 @@ class _GymDetailScreenState extends ConsumerState<GymDetailScreen> {
                     for(int i=0; i<4; i++) {
                       final slotName = slotLabels[i];
                       final total = slotCounts[i] + bookings.where((b) => b['slot'] == slotName).length;
-                      dropdownItems.add(DropdownMenuItem(value: slotName, child: Text("$slotName  ($total People)", style: const TextStyle(color: Colors.white))));
+                      dropdownItems.add(DropdownMenuItem(value: slotName, child: Text("$slotName  ($total People)", style: const TextStyle(fontSize: 12, color: Colors.white))));
                     }
                     return DropdownButtonFormField<String>(
                       dropdownColor: Colors.grey.shade900,
@@ -172,10 +172,10 @@ class _GymDetailScreenState extends ConsumerState<GymDetailScreen> {
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                           filled: true,
                           fillColor: Colors.grey.shade900,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16)
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12)
                       ),
                       isExpanded: true,
-                      hint: const Text("Choose a time slot...", style: TextStyle(color: Colors.white38)),
+                      hint: const Text("Choose a time slot...", style: TextStyle(fontSize:12,color: Colors.white38)),
                       value: _selectedSlot,
                       items: dropdownItems,
                       onChanged: (v) => setState(() => _selectedSlot = v),
@@ -184,11 +184,11 @@ class _GymDetailScreenState extends ConsumerState<GymDetailScreen> {
                   loading: () => const LinearProgressIndicator(color: neonGreen),
                   error: (_,__) => const Text("Could not load slots", style: TextStyle(color: Colors.white)),
                 ),
+                const SizedBox(height: 12),
+                SwitchListTile(title: const Text("Add Personal Trainer?", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12, color: Colors.white)), subtitle: Text("+\$${gym.trainerFee}", style: const TextStyle(color: neonGreen,fontSize: 12)), value: _addTrainer, activeColor: neonGreen, onChanged: (v) => setState(() => _addTrainer = v)),
                 const SizedBox(height: 20),
-                SwitchListTile(title: const Text("Add Personal Trainer?", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)), subtitle: Text("+\$${gym.trainerFee}", style: const TextStyle(color: neonGreen)), value: _addTrainer, activeColor: neonGreen, onChanged: (v) => setState(() => _addTrainer = v)),
-                const SizedBox(height: 40),
-                SizedBox(width: double.infinity, height: 55, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: neonGreen, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))), onPressed: _handleJoinAttempt, child: Text("PAY \$${_totalPrice.toStringAsFixed(0)} & JOIN", style: const TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)))),
-                const SizedBox(height: 40),
+                SizedBox(width: double.infinity, height: 40, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: neonGreen, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))), onPressed: _handleJoinAttempt, child: Text("PAY \$${_totalPrice.toStringAsFixed(0)} & JOIN", style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold)))),
+                const SizedBox(height: 20),
               ]),
             ),
           ),
@@ -203,12 +203,12 @@ class _GymDetailScreenState extends ConsumerState<GymDetailScreen> {
     return GestureDetector(
       onTap: () => setState(() => _selectedPlan = title),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 6),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(color: isSelected ? neonGreen : Colors.grey.shade900, border: Border.all(color: isSelected ? neonGreen : Colors.white10), borderRadius: BorderRadius.circular(12)),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: TextStyle(color: isSelected ? Colors.black : Colors.white, fontWeight: FontWeight.bold)), Text(sub, style: TextStyle(color: isSelected ? Colors.black54 : Colors.white54, fontSize: 12))]),
-          Text("\$$price", style: TextStyle(color: isSelected ? Colors.black : Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: TextStyle(color: isSelected ? Colors.black  : Colors.white, fontWeight: FontWeight.bold, fontSize:13)), Text(sub, style: TextStyle(color: isSelected ? Colors.black54 : Colors.white54, fontSize: 10))]),
+          Text("\$$price", style: TextStyle(color: isSelected ? Colors.black : Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
         ]),
       ),
     );
