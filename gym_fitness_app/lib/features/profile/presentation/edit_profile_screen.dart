@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Added for InputFormatters
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/domain/user_model.dart';
 import '../../auth/data/user_repository.dart';
@@ -19,7 +19,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   static const Color neonGreen = Color(0xFFD0FD3E);
 
   late TextEditingController _nameCtrl;
-  // Removed _emailCtrl since we don't edit it anymore
   late TextEditingController _ageCtrl;
   late TextEditingController _contactCtrl;
   late TextEditingController _addressCtrl;
@@ -48,10 +47,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // 1. Update Realtime Database ONLY (No Auth/Email changes)
       final updatedUser = UserModel(
         uid: widget.user.uid,
-        email: widget.user.email, // Keep existing email
+        email: widget.user.email,
         role: widget.user.role,
         createdAt: widget.user.createdAt,
         fullName: _nameCtrl.text.trim(),
@@ -86,35 +84,43 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      // Prevents the layout from scrolling/resizing when keyboard opens
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text("EDIT PERSONAL INFO", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text("EDIT PERSONAL INFO", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
         backgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(color: neonGreen),
+        iconTheme: const IconThemeData(color: neonGreen, size: 18),
+        elevation: 0,
+        scrolledUnderElevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+      // Removed SingleChildScrollView
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
         child: Form(
           key: _formKey,
           child: Column(
+            // Distribute space evenly to fit the single page
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // 1. Name: Letters Only
               _buildInput("Full Name", _nameCtrl, required: true,
                   regex: RegExp(r"^[a-zA-Z\s]+$"), errorMsg: "Only letters allowed"),
 
-              // Email Field (Read-Only)
+              // Email Field (Read-Only) - Made Compact
               Padding(
-                padding: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.only(bottom: 8), // Reduced bottom padding
                 child: TextFormField(
                   initialValue: widget.user.email,
-                  readOnly: true, // Prevent editing
-                  style: const TextStyle(color: Colors.white54), // Dimmed text
+                  readOnly: true,
+                  style: const TextStyle(color: Colors.white54, fontSize: 11), // Smaller text
                   decoration: InputDecoration(
-                    labelText: "Email Address (Cannot change)",
-                    labelStyle: const TextStyle(color: Colors.white38),
+                    labelText: "Email (Read-only)",
+                    labelStyle: const TextStyle(color: Colors.white38, fontSize: 11), // Smaller label
                     filled: true,
+                    isDense: true, // Compacts the field
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8), // Tighter padding
                     fillColor: Colors.grey.shade900,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
                   ),
                 ),
               ),
@@ -122,50 +128,43 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               _buildInput("Profile Pic URL", _picCtrl),
 
               Row(children: [
-                // 2. Age: Numbers only, 12-100
                 Expanded(child: _buildInput("Age", _ageCtrl, required: true, number: true,
                     validator: (v) {
                       int? age = int.tryParse(v ?? "");
-                      if (age == null || age < 12 || age > 100) return "12-100 only";
+                      if (age == null || age < 12 || age > 100) return "Invalid";
                       return null;
                     }
                 )),
-                const SizedBox(width: 10),
-                // 3. Contact: Basic length check
+                const SizedBox(width: 8),
                 Expanded(child: _buildInput("Contact", _contactCtrl, required: true, minLength: 10)),
               ]),
 
-              const Divider(color: Colors.white24, height: 40),
+              const Divider(color: Colors.white24, height: 10), // Reduced height
 
-              // 4. Address: Min length
               _buildInput("Street Address", _addressCtrl, required: true, minLength: 5),
 
               Row(children: [
-                // 5. City: Letters Only
                 Expanded(child: _buildInput("City", _cityCtrl, required: true, regex: RegExp(r"^[a-zA-Z\s]+$"))),
-                const SizedBox(width: 10),
-                // 6. State: Letters Only
+                const SizedBox(width: 8),
                 Expanded(child: _buildInput("State", _stateCtrl, required: true, regex: RegExp(r"^[a-zA-Z\s]+$"))),
               ]),
 
               Row(children: [
-                // 7. Country: Letters Only
                 Expanded(child: _buildInput("Country", _countryCtrl, required: true, regex: RegExp(r"^[a-zA-Z\s]+$"))),
-                const SizedBox(width: 10),
-                // 8. Postal Code: Numbers Only
+                const SizedBox(width: 8),
                 Expanded(child: _buildInput("Postal Code", _postalCtrl, number: true)),
               ]),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 5),
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 32, // Smaller button height
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _saveProfile,
                   style: ElevatedButton.styleFrom(backgroundColor: neonGreen),
                   child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.black)
-                      : const Text("SAVE CHANGES", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                      ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
+                      : const Text("SAVE CHANGES", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11)),
                 ),
               )
             ],
@@ -175,41 +174,40 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     );
   }
 
-  // --- UPDATED INPUT WIDGET WITH RESTRICTIONS ---
   Widget _buildInput(String label, TextEditingController ctrl, {
     bool required = false,
     bool number = false,
     int minLength = 0,
     RegExp? regex,
     String? errorMsg,
-    String? Function(String?)? validator, // Allow custom validator override
+    String? Function(String?)? validator,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 8), // Reduced from 16 to 8
       child: TextFormField(
         controller: ctrl,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white, fontSize: 11), // Smaller input text
         keyboardType: number ? TextInputType.number : TextInputType.text,
-        // Allow digits only if 'number' is true
         inputFormatters: number
             ? [FilteringTextInputFormatter.digitsOnly]
             : [],
         validator: validator ?? (v) {
           if (required && (v == null || v.trim().isEmpty)) return "Required";
-          if (minLength > 0 && v!.length < minLength) return "Min $minLength chars";
-
+          if (minLength > 0 && v!.length < minLength) return "Min $minLength";
           if (regex != null && !regex.hasMatch(v!)) {
-            return errorMsg ?? "Invalid format (Letters only)";
+            return errorMsg ?? "Invalid";
           }
           return null;
         },
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.white54),
+          labelStyle: const TextStyle(color: Colors.white54, fontSize: 11), // Smaller label text
           filled: true,
           fillColor: Colors.grey.shade900,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: neonGreen)),
+          isDense: true, // Reduces vertical height significantly
+          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8), // Tighter internal padding
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none), // Slightly smaller radius
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: neonGreen)),
         ),
       ),
     );

@@ -36,7 +36,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Password Changed Successfully!", style: TextStyle(color: Colors.white)),
+          content: Text("Password Changed Successfully!", style: TextStyle(color: Colors.white, fontSize: 12)),
           backgroundColor: Colors.black87,
         ));
       }
@@ -46,12 +46,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         if (e.code == 'wrong-password') msg = "Incorrect Current Password.";
         if (e.code == 'requires-recent-login') msg = "Session expired. Log out and back in.";
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(msg, style: const TextStyle(color: Colors.white)),
+          content: Text(msg, style: const TextStyle(color: Colors.white, fontSize: 12)),
           backgroundColor: Colors.red.shade900,
         ));
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e", style: const TextStyle(fontSize: 12))));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -61,32 +61,39 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      // Prevents resizing/overflow when keyboard opens
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text("EDIT MY PASSWORD", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text("EDIT MY PASSWORD", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
         backgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(color: neonGreen),
+        iconTheme: const IconThemeData(color: neonGreen, size: 18),
+        elevation: 0,
+        scrolledUnderElevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+      // Removed SingleChildScrollView
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Form(
           key: _formKey,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start, // Aligns content to the top
             children: [
+              const SizedBox(height: 20), // Spacing from AppBar
               _buildPassInput("Current Password", _currentPassCtrl),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12), // Reduced spacing
               _buildPassInput("New Password", _newPassCtrl, isNew: true),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12), // Reduced spacing
               _buildPassInput("Confirm New Password", _confirmPassCtrl, isConfirm: true),
-              const SizedBox(height: 40),
+              const SizedBox(height: 24), // Reduced spacing
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 32, // Smaller button height
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _updatePassword,
                   style: ElevatedButton.styleFrom(backgroundColor: neonGreen),
                   child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.black)
-                      : const Text("UPDATE PASSWORD", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                      ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
+                      : const Text("UPDATE PASSWORD", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11)),
                 ),
               )
             ],
@@ -100,14 +107,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return TextFormField(
       controller: ctrl,
       obscureText: true,
-      style: const TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white, fontSize: 11), // Smaller input text
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.white54),
+        labelStyle: const TextStyle(color: Colors.white54, fontSize: 11), // Smaller label
         filled: true,
         fillColor: Colors.grey.shade900,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: neonGreen)),
+        isDense: true, // Reduces vertical height
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10), // Tighter padding
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: neonGreen)),
+        errorStyle: const TextStyle(fontSize: 9), // Smaller error text
       ),
       validator: (v) {
         if (v == null || v.isEmpty) return "Required";
