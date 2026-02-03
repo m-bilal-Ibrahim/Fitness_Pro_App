@@ -164,14 +164,14 @@ class ProfileScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Colors.grey.shade900,
-        title: const Text("Logout?", style: TextStyle(color: Colors.white)),
-        content: const Text("Are you sure you want to log out?", style: TextStyle(color: Colors.white70)),
+        title: const Text("Logout?", style: TextStyle(color: Colors.white, fontSize: 16)),
+        content: const Text("Are you sure you want to log out?", style: TextStyle(color: Colors.white70, fontSize: 12)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Cancel", style: TextStyle(color: Colors.white54))),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Cancel", style: TextStyle(color: Colors.white54, fontSize: 14))),
           TextButton(onPressed: () {
             Navigator.pop(ctx);
             ref.read(authRepositoryProvider).signOut();
-          }, child: const Text("Logout", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold))),
+          }, child: const Text("Logout", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 14))),
         ],
       ),
     );
