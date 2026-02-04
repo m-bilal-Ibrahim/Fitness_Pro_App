@@ -54,10 +54,10 @@ class _AddEditGymScreenState extends ConsumerState<AddEditGymScreen> {
 
   // --- VALIDATORS ---
   String? _requiredValidator(String? v) => (v == null || v.trim().isEmpty) ? 'Required' : null;
-  String? _numberValidator(String? v) => (v == null || double.tryParse(v) == null) ? 'Invalid Number' : null;
+  String? _numberValidator(String? v) => (v == null || double.tryParse(v) == null) ? 'Invalid' : null;
   String? _imageValidator(String? v) {
-    if (v == null || v.isEmpty) return 'Image URL is mandatory';
-    if (!v.startsWith('http')) return 'Must be a valid link';
+    if (v == null || v.isEmpty) return 'Required';
+    if (!v.startsWith('http')) return 'Invalid Link';
     return null;
   }
 
@@ -98,8 +98,8 @@ class _AddEditGymScreenState extends ConsumerState<AddEditGymScreen> {
       context: context,
       builder: (c) => AlertDialog(
         backgroundColor: Colors.grey.shade900,
-        title: const Text("Delete Gym?", style: TextStyle(color: Colors.white)),
-        content: const Text("This cannot be undone.", style: TextStyle(color: Colors.white70)),
+        title: const Text("Delete Gym?", style: TextStyle(color: Colors.white, fontSize: 16)),
+        content: const Text("This cannot be undone.", style: TextStyle(color: Colors.white70, fontSize: 12)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(c, false), child: const Text("Cancel")),
           TextButton(onPressed: () => Navigator.pop(c, true), child: const Text("Delete", style: TextStyle(color: Colors.red))),
@@ -121,13 +121,13 @@ class _AddEditGymScreenState extends ConsumerState<AddEditGymScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text(isEditing ? "Edit Branch" : "Add New Branch", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(isEditing ? "Edit Branch" : "Add New Branch", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
         backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: neonGreen),
+        iconTheme: const IconThemeData(color: neonGreen, size: 20),
         actions: [
           if (isEditing)
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
+              icon: const Icon(Icons.delete, color: Colors.red, size: 20),
               onPressed: _isLoading ? null : _deleteGym,
             ),
         ],
@@ -140,56 +140,70 @@ class _AddEditGymScreenState extends ConsumerState<AddEditGymScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildSectionTitle("Basic Info"),
-              TextFormField(controller: _nameController, decoration: _inputDec("Name", Icons.fitness_center), validator: _requiredValidator, style: const TextStyle(color: Colors.white)),
-              const SizedBox(height: 10),
-              TextFormField(controller: _imageController, decoration: _inputDec("Image URL", Icons.image), validator: _imageValidator, keyboardType: TextInputType.url, style: const TextStyle(color: Colors.white)),
-              const SizedBox(height: 10),
-              TextFormField(controller: _addressController, decoration: _inputDec("Address", Icons.location_on), validator: _requiredValidator, style: const TextStyle(color: Colors.white)),
-              const SizedBox(height: 10),
-              TextFormField(controller: _descriptionController, decoration: _inputDec("Description", Icons.description), maxLines: 3, validator: _requiredValidator, style: const TextStyle(color: Colors.white)),
+              _buildCompactInput(_nameController, "Name", Icons.fitness_center, validator: _requiredValidator),
+              _buildCompactInput(_imageController, "Image URL", Icons.image, validator: _imageValidator, type: TextInputType.url),
+              _buildCompactInput(_addressController, "Address", Icons.location_on, validator: _requiredValidator),
+              _buildCompactInput(_descriptionController, "Description", Icons.description, validator: _requiredValidator, maxLines: 3),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
               _buildSectionTitle("Operations"),
-              DropdownButtonFormField<String>(
-                value: _status,
-                dropdownColor: Colors.grey.shade900,
-                items: ['open', 'closed', 'maintenance'].map((s) => DropdownMenuItem(value: s, child: Text(s.toUpperCase(), style: const TextStyle(color: Colors.white)))).toList(),
-                onChanged: (v) => setState(() => _status = v!),
-                decoration: _inputDec("Status", Icons.info),
-              ),
-              const SizedBox(height: 10),
-              Row(children: [
-                Expanded(child: TextFormField(controller: _openTimeController, decoration: _inputDec("Opens", Icons.schedule), validator: _requiredValidator, style: const TextStyle(color: Colors.white))),
-                const SizedBox(width: 10),
-                Expanded(child: TextFormField(controller: _closeTimeController, decoration: _inputDec("Closes", Icons.schedule), validator: _requiredValidator, style: const TextStyle(color: Colors.white))),
-              ]),
-              const SizedBox(height: 10),
-              TextFormField(controller: _capacityController, decoration: _inputDec("Capacity", Icons.groups), validator: _numberValidator, style: const TextStyle(color: Colors.white)),
 
-              const SizedBox(height: 20),
-              _buildSectionTitle("Pricing"),
-              Row(children: [
-                Expanded(child: TextFormField(controller: _silverController, decoration: _inputDec("Silver (Weekly)", Icons.attach_money), validator: _numberValidator, style: const TextStyle(color: Colors.white))),
-                const SizedBox(width: 10),
-                Expanded(child: TextFormField(controller: _goldController, decoration: _inputDec("Gold (Monthly)", Icons.attach_money), validator: _numberValidator, style: const TextStyle(color: Colors.white))),
-              ]),
-              const SizedBox(height: 10),
-              Row(children: [
-                Expanded(child: TextFormField(controller: _platinumController, decoration: _inputDec("Platinum (Yearly)", Icons.attach_money), validator: _numberValidator, style: const TextStyle(color: Colors.white))),
-                const SizedBox(width: 10),
-                Expanded(child: TextFormField(controller: _trainerController, decoration: _inputDec("Trainer Fee", Icons.person_add), validator: _numberValidator, style: const TextStyle(color: Colors.white))),
-              ]),
-
-              const SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: neonGreen, padding: const EdgeInsets.symmetric(vertical: 16)),
-                  onPressed: _isLoading ? null : _saveGym,
-                  child: _isLoading ? const CircularProgressIndicator(color: Colors.black) : Text(isEditing ? "UPDATE GYM" : "SAVE GYM", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              // Custom Compact Dropdown
+              Container(
+                height: 45,
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(color: Colors.grey.shade900, borderRadius: BorderRadius.circular(10)),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _status,
+                    dropdownColor: Colors.grey.shade900,
+                    icon: const Icon(Icons.arrow_drop_down, color: Colors.white54),
+                    isExpanded: true,
+                    items: ['open', 'closed', 'maintenance'].map((s) => DropdownMenuItem(value: s, child: Row(children: [
+                      const Icon(Icons.info, size: 16, color: Colors.white54),
+                      const SizedBox(width: 10),
+                      Text(s.toUpperCase(), style: const TextStyle(color: Colors.white, fontSize: 13))
+                    ]))).toList(),
+                    onChanged: (v) => setState(() => _status = v!),
+                  ),
                 ),
               ),
-              const SizedBox(height: 50),
+
+              Row(children: [
+                Expanded(child: _buildCompactInput(_openTimeController, "Opens", Icons.schedule, validator: _requiredValidator)),
+                const SizedBox(width: 10),
+                Expanded(child: _buildCompactInput(_closeTimeController, "Closes", Icons.schedule, validator: _requiredValidator)),
+              ]),
+              _buildCompactInput(_capacityController, "Capacity", Icons.groups, validator: _numberValidator, type: TextInputType.number),
+
+              const SizedBox(height: 15),
+              _buildSectionTitle("Pricing"),
+              Row(children: [
+                Expanded(child: _buildCompactInput(_silverController, "Silver (Wk)", Icons.attach_money, validator: _numberValidator, type: TextInputType.number)),
+                const SizedBox(width: 10),
+                Expanded(child: _buildCompactInput(_goldController, "Gold (Mo)", Icons.attach_money, validator: _numberValidator, type: TextInputType.number)),
+              ]),
+              Row(children: [
+                Expanded(child: _buildCompactInput(_platinumController, "Platinum (Yr)", Icons.attach_money, validator: _numberValidator, type: TextInputType.number)),
+                const SizedBox(width: 10),
+                Expanded(child: _buildCompactInput(_trainerController, "Trainer Fee", Icons.person_add, validator: _numberValidator, type: TextInputType.number)),
+              ]),
+
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 45, // Compact Button
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: neonGreen,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
+                  ),
+                  onPressed: _isLoading ? null : _saveGym,
+                  child: _isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2)) : Text(isEditing ? "UPDATE GYM" : "SAVE GYM", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13)),
+                ),
+              ),
+              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -198,17 +212,37 @@ class _AddEditGymScreenState extends ConsumerState<AddEditGymScreen> {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Padding(padding: const EdgeInsets.only(bottom: 10), child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)));
+    return Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white70)));
   }
 
-  InputDecoration _inputDec(String label, IconData icon) {
-    return InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: Colors.white54),
-        prefixIcon: Icon(icon, size: 20, color: Colors.white54),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-        filled: true,
-        fillColor: Colors.grey.shade900
+  // Helper for Compact Inputs
+  Widget _buildCompactInput(TextEditingController ctrl, String label, IconData icon, {String? Function(String?)? validator, TextInputType? type, int maxLines = 1}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: SizedBox(
+        height: maxLines == 1 ? 45 : null, // Fixed height for single lines
+        child: TextFormField(
+          controller: ctrl,
+          style: const TextStyle(color: Colors.white, fontSize: 13), // Smaller Text
+          keyboardType: type,
+          maxLines: maxLines,
+          validator: validator,
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: const TextStyle(color: Colors.white54, fontSize: 12),
+            floatingLabelStyle: const TextStyle(color: neonGreen),
+            prefixIcon: Icon(icon, size: 16, color: Colors.white54), // Smaller Icon
+            filled: true,
+            fillColor: Colors.grey.shade900,
+            isDense: true,
+            // Vertical 0 centers text in fixed height container
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: maxLines > 1 ? 12 : 0),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: neonGreen)),
+            errorStyle: const TextStyle(height: 0, fontSize: 0), // Hides error layout shift
+          ),
+        ),
+      ),
     );
   }
 }
